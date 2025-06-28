@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -6,10 +7,11 @@ const urlRoute = require("./routes/url");
 
 const app = express();
 
-// ✅ Always register CORS and JSON middleware BEFORE routes
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use("/url", urlRoute);
 
 app.get('/:shortId', async (req, res) => {
@@ -33,8 +35,8 @@ app.get('/:shortId', async (req, res) => {
   res.redirect(entry.originalUrl);
 });
 
-const PORT = 8001;
-const mongoURI = "mongodb+srv://itsmechama2004:WaY4WeN5fktIZYwY@cluster0.14ixw3r.mongodb.net/shorturl?retryWrites=true&w=majority&appName=Cluster0";
+const PORT = process.env.PORT || 8001;
+const mongoURI = process.env.MONGO_URI;
 
 mongoose.connect(mongoURI)
   .then(() => {
