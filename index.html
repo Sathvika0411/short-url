@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Short URL Generator</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 40px auto; padding: 20px; }
+    input, button { padding: 10px; width: 100%; margin: 10px 0; }
+    .output { margin-top: 20px; }
+    img { width: 200px; margin-top: 10px; }
+    .analytics { margin-top: 10px; font-size: 16px; color: green; }
+  </style>
+</head>
+<body>
+  <h2>🔗 Shorten Your URL</h2>
+  <input type="text" id="originalUrl" placeholder="Enter long URL" />
+  <button onclick="generateShortURL()">Generate</button>
+
+  <div class="output" id="output" style="display: none;">
+    <p><strong>Short URL:</strong> <a id="shortUrl" href="#" target="_blank"></a></p>
+    <p><strong>QR Code:</strong></p>
+    <img id="qrImage" />
+    <p class="analytics" id="analytics"></p>
+  </div>
+
+  <script>
+    async function generateShortURL() {
+      const url = document.getElementById('originalUrl').value;
+
+      const res = await fetch('http://localhost:8001/url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await res.json();
+
+      const short = `http://localhost:8001/${data.id}`;
+      document.getElementById('shortUrl').href = short;
+      document.getElementById('shortUrl').textContent = short;
+      document.getElementById('qrImage').src = data.qrCode;
+
+      // Fetch analytics
+      const aRes = await fetch(`http://localhost:8001/url/analytics/${data.id}`);
+      const aData = await aRes.json();
+      document.getElementById('analytics').textContent = `Total Clicks: ${aData.totalClicks}`;
+
+      document.getElementById('output').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
