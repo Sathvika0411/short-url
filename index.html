@@ -25,29 +25,30 @@
   </div>
 
   <script>
-    async function generateShortURL() {
-      const url = document.getElementById('originalUrl').value;
+  async function generateShortURL() {
+    const url = document.getElementById('originalUrl').value;
 
-      const res = await fetch('http://localhost:8001/url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
+    const res = await fetch('https://short-url-1-n1fx.onrender.com/url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      const short = `http://localhost:8001/${data.id}`;
-      document.getElementById('shortUrl').href = short;
-      document.getElementById('shortUrl').textContent = short;
-      document.getElementById('qrImage').src = data.qrCode;
+    const short = `https://short-url-1-n1fx.onrender.com/${data.id}`;
+    document.getElementById('shortUrl').href = short;
+    document.getElementById('shortUrl').textContent = short;
+    document.getElementById('qrImage').src = data.qrCode;
 
-      // Fetch analytics
-      const aRes = await fetch(`http://localhost:8001/url/analytics/${data.id}`);
-      const aData = await aRes.json();
-      document.getElementById('analytics').textContent = `Total Clicks: ${aData.totalClicks}`;
+    // Fetch analytics
+    const aRes = await fetch(`https://short-url-1-n1fx.onrender.com/url/analytics/${data.id}`);
+    const aData = await aRes.json();
+    document.getElementById('analytics').textContent = `Total Clicks: ${aData.totalClicks}`;
 
-      document.getElementById('output').style.display = 'block';
-    }
-  </script>
+    document.getElementById('output').style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
