@@ -6,11 +6,12 @@ async function handleGenerateNewShortURL(req, res) {
   const body = req.body;
   if (!body.url) return res.status(400).json({ error: 'url is required' });
 
-  const shortId = shortid();
-  const shortUrl = `http://localhost:8001/${shortId}`;
+  const BASE_URL = process.env.BASE_URL || 'http://localhost:8001';
+const shortUrl = `${BASE_URL}/${shortId}`;
 
-  // Generate QR code
-  const qrCode = await QRCode.toDataURL(shortUrl);
+// Generate QR code
+const qrCode = await QRCode.toDataURL(shortUrl);
+
 
   // Save to DB
   await URL.create({

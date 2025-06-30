@@ -10,12 +10,32 @@
     .output { margin-top: 20px; }
     img { width: 200px; margin-top: 10px; }
     .analytics { margin-top: 10px; font-size: 16px; color: green; }
+
+    /* Loader style */
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <h2>🔗 Shorten Your URL</h2>
   <input type="text" id="originalUrl" placeholder="Enter long URL" />
   <button onclick="generateShortURL()">Generate</button>
+
+  <!-- Loader -->
+  <div class="loader" id="loader"></div>
 
   <div class="output" id="output" style="display: none;">
     <p><strong>Short URL:</strong> <a id="shortUrl" href="#" target="_blank"></a></p>
@@ -25,30 +45,42 @@
   </div>
 
   <script>
-  async function generateShortURL() {
-    const url = document.getElementById('originalUrl').value;
+    async function generateShortURL() {
+      const url = document.getElementById('originalUrl').value;
 
-    const res = await fetch('https://short-url-1-n1fx.onrender.com/url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
-    });
+      // Show loader and hide output
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('output').style.display = 'none';
 
-    const data = await res.json();
+      try {
+        const res = await fetch('https://short-url-1-n1fx.onrender.com/url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
 
-    const short = `https://short-url-1-n1fx.onrender.com/${data.id}`;
-    document.getElementById('shortUrl').href = short;
-    document.getElementById('shortUrl').textContent = short;
-    document.getElementById('qrImage').src = data.qrCode;
+        const data = await res.json();
 
-    // Fetch analytics
-    const aRes = await fetch(`https://short-url-1-n1fx.onrender.com/url/analytics/${data.id}`);
-    const aData = await aRes.json();
-    document.getElementById('analytics').textContent = `Total Clicks: ${aData.totalClicks}`;
+        const short = `https://short-url-1-n1fx.onrender.com/${data.id}`;
+        document.getElementById('shortUrl').href = short;
+        document.getElementById('shortUrl').textContent = short;
+        document.getElementById('qrImage').src = data.qrCode;
 
-    document.getElementById('output').style.display = 'block';
-  }
-</script>
+        // Fetch analytics
+        const aRes = await fetch(`https://short-url-1-n1fx.onrender.com/url/analytics/${data.id}`);
+        const aData = await aRes.json();
+        document.getElementById('analytics').textContent = `Total Clicks: ${aData.totalClicks}`;
 
+        // Show output
+        document.getElementById('output').style.display = 'block';
+
+      } catch (error) {
+        alert('Something went wrong! Please try again.');
+      } finally {
+        // Hide loader
+        document.getElementById('loader').style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
